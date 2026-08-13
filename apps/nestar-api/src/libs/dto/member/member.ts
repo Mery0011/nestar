@@ -9,19 +9,19 @@ export class Member {
     _id!: ObjectId;
 
     @Field(() => MemberType)
-    memberType!: MemberType;
+    memberType: MemberType;
 
     @Field(() => MemberStatus)
-    memberStatus!: MemberStatus;
+    memberStatus: MemberStatus;
 
     @Field(() => MemberAuthType)
-    memberAuthType!: MemberAuthType;
+    memberAuthType: MemberAuthType;
 
     @Field(() => String)
-    memberPhone!: string;
+    memberPhone: string;
 
     @Field(() => String)
-    memberNick!: string;
+    memberNick: string;
 
     memberPassword?: string;
 
@@ -29,7 +29,7 @@ export class Member {
     memberFullName?: string;
 
     @Field(() => String)
-    memberImage!: string;
+    memberImage: string;
 
     @Field(() => String, { nullable: true })
     memberAddress?: string;
@@ -38,34 +38,37 @@ export class Member {
     memberDesc?: string;
 
     @Field(() => Int)
-    memberArticles!: number;
+    memberProperties: number;
 
     @Field(() => Int)
-    memberFollowers!: number;
+    memberArticles: number;
 
     @Field(() => Int)
-    memberFollowings!: number;
+    memberFollowers: number;
 
     @Field(() => Int)
-    memberPoints!: number;
+    memberFollowings: number;
 
     @Field(() => Int)
-    memberLikes!: number;
+    memberPoints: number;
 
     @Field(() => Int)
-    memberViews!: number;
+    memberLikes: number;
 
     @Field(() => Int)
-    memberComments!: number;
+    memberViews: number;
 
     @Field(() => Int)
-    memberRank!: number;
+    memberComments: number;
 
     @Field(() => Int)
-    memberWarnings!: number;
+    memberRank: number;
 
     @Field(() => Int)
-    memberBlocks!: number;
+    memberWarnings: number;
+
+    @Field(() => Int)
+    memberBlocks: number;
 
     @Field(() => Date, { nullable: true })
     deletedAt?: Date;
@@ -75,6 +78,8 @@ export class Member {
 
     @Field(() => Date)
     updatedAt?: Date;
+
+    @Field
 
 
 }
