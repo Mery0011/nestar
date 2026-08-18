@@ -79,7 +79,5 @@ export class Member {
     @Field(() => Date)
     updatedAt?: Date;
 
-    @Field
-
 
 }
