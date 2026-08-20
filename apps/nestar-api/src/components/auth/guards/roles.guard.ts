@@ -1,14 +1,15 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthService } from '../auth.service';
-import { Message } from 'apps/nestar-api/src/libs/enums/common.enum';
+import { Message } from '../../../libs/enums/common.enum';
+
 
 @Injectable()
 export class RolesGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
 		private authService: AuthService,
-	) {}
+	) { }
 
 	async canActivate(context: ExecutionContext | any): Promise<boolean> {
 		const roles = this.reflector.get<string[]>('roles', context.getHandler());
@@ -34,5 +35,7 @@ export class RolesGuard implements CanActivate {
 		}
 
 		// description => http, rpc, gprs and etc are ignored
+		return true;
 	}
+
 }
