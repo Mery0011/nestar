@@ -15,6 +15,7 @@ import { WithoutGuard } from '../auth/guards/without.guard';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
 import { Message } from '../../libs/enums/common.enum';
+import * as path from 'path';
 
 
 @Resolver()
@@ -103,8 +104,16 @@ export class MemberResolver {
         console.log('Mutation: imageUploader');
 
         if (!filename) throw new Error(Message.UPLOAD_FAILED);
-        const validMime = validMimeTypes.includes(mimetype);
-        if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+
+        console.log('DEBUG mimetype:', mimetype, 'filename:', filename);
+
+        // Check image extension
+        const extension = path.extname(filename).toLowerCase();
+        const validExtensions = ['.jpg', '.jpeg', '.png'];
+
+        if (!validExtensions.includes(extension)) {
+            throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+        }
 
         const imageName = getSerialForImage(filename);
         const url = `uploads/${target}/${imageName}`;
@@ -116,6 +125,7 @@ export class MemberResolver {
                 .on('finish', async () => resolve(true))
                 .on('error', () => reject(false));
         });
+
         if (!result) throw new Error(Message.UPLOAD_FAILED);
 
         return url;
@@ -131,34 +141,44 @@ export class MemberResolver {
         console.log('Mutation: imagesUploader');
 
         const uploadedImages: string[] = [];
-        const promisedList = files.map(async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
-            try {
-                const { filename, mimetype, encoding, createReadStream } = await img;
 
-                const validMime = validMimeTypes.includes(mimetype);
-                if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+        const promisedList = files.map(
+            async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
+                try {
+                    const { filename, mimetype, encoding, createReadStream } = await img;
 
-                const imageName = getSerialForImage(filename);
-                const url = `uploads/${target}/${imageName}`;
-                const stream = createReadStream();
+                    console.log('DEBUG mimetype:', mimetype, 'filename:', filename);
 
-                const result = await new Promise((resolve, reject) => {
-                    stream
-                        .pipe(createWriteStream(url))
-                        .on('finish', () => resolve(true))
-                        .on('error', () => reject(false));
-                });
-                if (!result) throw new Error(Message.UPLOAD_FAILED);
+                    // Check image extension
+                    const extension = path.extname(filename).toLowerCase();
+                    const validExtensions = ['.jpg', '.jpeg', '.png'];
 
-                uploadedImages[index] = url;
-            } catch (err) {
-                console.log('Error, file missing!');
-            }
-        });
+                    if (!validExtensions.includes(extension)) {
+                        throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+                    }
+
+                    const imageName = getSerialForImage(filename);
+                    const url = `uploads/${target}/${imageName}`;
+                    const stream = createReadStream();
+
+                    const result = await new Promise((resolve, reject) => {
+                        stream
+                            .pipe(createWriteStream(url))
+                            .on('finish', () => resolve(true))
+                            .on('error', () => reject(false));
+                    });
+
+                    if (!result) throw new Error(Message.UPLOAD_FAILED);
+
+                    uploadedImages[index] = url;
+                } catch (err) {
+                    console.log('Error, file missing!');
+                }
+            },
+        );
 
         await Promise.all(promisedList);
+
         return uploadedImages;
     }
-
-
 }
