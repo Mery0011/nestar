@@ -11,12 +11,16 @@ import { ViewService } from '../view/view.service';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { MemberService } from '../member/member.service';
 
 @Injectable()
 export class PropertyService {
-    memberService: any;
-    viewService: any;
-    constructor(@InjectModel('Property') private readonly propertyModel: Model<Property>) { }
+
+
+    constructor(@InjectModel('Property') private readonly propertyModel: Model<Property>,
+        private memberService: MemberService,
+        private viewService: ViewService,) { }
+
     public async createProperty(input: PropertyInput): Promise<Property> {
         try {
             const result = await this.propertyModel.create(input);
@@ -38,7 +42,7 @@ export class PropertyService {
             propertyStatus: PropertyStatus.ACTIVE,
         };
 
-        const targetProperty = await this.propertyModel
+        const targetProperty: Property | null = await this.propertyModel
             .findOne(search)
             .lean()
             .exec();
