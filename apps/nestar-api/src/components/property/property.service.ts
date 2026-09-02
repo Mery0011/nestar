@@ -32,7 +32,6 @@ export class PropertyService {
             return result;
         } catch (err) {
             console.log('Error, Service.model:', (err as Error).message);
-
             throw new BadRequestException(Message.CREATE_FAILED);
         }
     }
@@ -88,9 +87,7 @@ export class PropertyService {
             .findByIdAndUpdate(
                 _id,
                 { $inc: { [targetKey]: modifier } },
-                {
-                    new: true,
-                },
+                { new: true, },
             )
             .exec();
 
