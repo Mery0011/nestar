@@ -13,6 +13,7 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
+import { ViewInput } from '../../libs/dto/view/view.input';
 
 @Injectable()
 export class MemberService {
@@ -69,6 +70,7 @@ export class MemberService {
         return result;
     }
 
+
     public async getMember(memberId: ObjectId | null, targetId: ObjectId): Promise<Member> {
         const search: T = {
             _id: targetId,
@@ -76,20 +78,36 @@ export class MemberService {
                 $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
             },
         };
-
-        const targetMember = await this.memberModel.findOne(search).lean().exec();
+        const targetMember: Member | null = await this.memberModel
+            .findOne(search)
+            .lean()
+            .exec();
         if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         if (memberId) {
-            const viewInput = { memberId: memberId, viewRefId: targetId, viewGroup: ViewGroup.MEMBER };
+            const viewInput: ViewInput = {
+                memberId: memberId,
+                viewRefId: targetId,
+                viewGroup: ViewGroup.MEMBER,
+            };
             const newView = await this.viewService.recordView(viewInput);
             if (newView) {
-                await this.memberModel.findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
+                await this.memberModel
+                    .findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true })
+                    .exec();
                 targetMember.memberViews++;
             }
-            //meliked
-            //mefollowed
+
+            const likeInput = {
+                memberId: memberId,
+                likeRefId: targetId,
+                likeGroup: LikeGroup.MEMBER,
+            };
+            targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
+            // meFollowed
+
         }
+
         return targetMember;
     }
     public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
