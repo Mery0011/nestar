@@ -2,6 +2,7 @@ import type { ObjectId } from "mongoose";
 import { MemberAuthType, MemberStatus, MemberType } from "../../enums/member.enum";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { MeLiked } from "../like/like";
+import { MeFollowed } from "../follow/follow";
 
 
 @ObjectType()
@@ -87,6 +88,8 @@ export class Member {
     @Field(() => [MeLiked], { nullable: true })
     meLiked?: MeLiked[];
 
+    @Field(() => [MeFollowed], { nullable: true })
+    meFollowed?: MeFollowed[];
 }
 @ObjectType()
 export class TotalCounter {
