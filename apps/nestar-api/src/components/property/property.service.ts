@@ -10,7 +10,7 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewService } from '../view/view.service';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import moment from 'moment';
-import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { MemberService } from '../member/member.service';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
@@ -137,6 +137,7 @@ export class PropertyService {
                             { $skip: (input.page - 1) * input.limit },
                             { $limit: input.limit },
                             // meLiked
+                            lookupAuthMemberLiked(memberId),
                             lookupMember,
                             { $unwind: '$memberData' }, // [memberData] => memberData
                         ],
