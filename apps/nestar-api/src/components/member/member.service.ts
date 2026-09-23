@@ -208,7 +208,7 @@ export class MemberService {
         const { _id, targetKey, modifier } = input;
         return await this.memberModel
             .findOneAndUpdate(
-                _id,
+                { _id: _id },
                 {
                     $inc: { [targetKey]: modifier },
                 },
